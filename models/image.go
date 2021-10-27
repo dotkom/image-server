@@ -1,18 +1,13 @@
 package models
 
-import (
-	"github.com/gofrs/uuid"
-	"github.com/lib/pq"
-	"gorm.io/gorm"
-)
+import "github.com/google/uuid"
 
 // Gorm model for storing information about images
-type Image struct {
-	gorm.Model
-	ID          uuid.UUID `gorm:"primaryKey;type:uuid;"`
+type ImageMeta struct {
+	Key         uuid.UUID
 	Name        string
 	Description string
-	Tags        pq.StringArray `gorm:"type:text[]"`
+	Tags        []string
 	Mime        string
 	Size        uint64
 }

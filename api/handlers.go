@@ -15,25 +15,24 @@ import (
 	"github.com/chai2010/webp"
 	"github.com/disintegration/imaging"
 	"github.com/dotkom/image-server/models"
-	"github.com/gofrs/uuid"
-	"github.com/gorilla/mux"
-)
 
-// List info about all images
-func (api *API) list(w http.ResponseWriter, r *http.Request) {
-	var images []models.Image
-	api.db.Find(&images)
-	json.NewEncoder(w).Encode(images)
-}
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
+)
 
 // List info about single image
 func (api *API) info(w http.ResponseWriter, r *http.Request) {
 	key := mux.Vars(r)["key"]
 
-	var image models.Image
-	api.db.Limit(1).Find(&image, "id = ?", key)
+	meta, err := api.ms.Get(r.Context(), key)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		log.Debug(err)
 
-	json.NewEncoder(w).Encode(image)
+	}
+
+	json.NewEncoder(w).Encode(meta)
 }
 
 // Download image with given width, height and quality
@@ -62,12 +61,8 @@ func (api *API) download(w http.ResponseWriter, r *http.Request) {
 		quality = 100
 	}
 
-	// Load image data from db
-	var image models.Image
-	api.db.Limit(1).Find(&image, "id = ?", key)
-
-	// Get image bytes
-	buffer, err = api.storage.Get(r.Context(), key)
+	// Get image buffer
+	buffer, err = api.fs.Get(r.Context(), key)
 	if err != nil {
 		fmt.Print(err)
 		return
@@ -157,7 +152,7 @@ func (api *API) upload(w http.ResponseWriter, r *http.Request) {
 		mimeType = "image/webp"
 	}
 
-	key, err := uuid.NewV4()
+	key, err := uuid.NewRandom()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Print(err)
@@ -165,7 +160,7 @@ func (api *API) upload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save the image to persistant storage
-	err = api.storage.Save(r.Context(), buffer, key.String())
+	err = api.fs.Save(r.Context(), buffer, key.String())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Print(err)
@@ -179,16 +174,19 @@ func (api *API) upload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save image data to db
-	var image models.Image
-	newImage := &models.Image{
-		ID:          key,
+	meta := models.ImageMeta{
+		Key:         key,
 		Name:        name,
 		Description: description,
 		Tags:        tagSlice,
 		Mime:        mimeType,
 		Size:        uint64(fileInfo.Size),
 	}
-	api.db.Model(&image).Create(newImage)
+	err = api.ms.Save(r.Context(), meta)
+	if err != nil {
+		log.Debug(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 
-	json.NewEncoder(w).Encode(newImage)
+	json.NewEncoder(w).Encode(meta)
 }

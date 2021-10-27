@@ -7,22 +7,21 @@ import (
 	"github.com/allegro/bigcache"
 	"github.com/dotkom/image-server/storage"
 	"github.com/gorilla/mux"
-	"gorm.io/gorm"
 )
 
 // API implements http.Handler and is used to handle http requests
 type API struct {
-	storage storage.Storage
-	db      *gorm.DB
-	cache   *bigcache.BigCache
-	router  *mux.Router
+	fs     storage.FileStorage
+	ms     storage.MetaStorage
+	cache  *bigcache.BigCache
+	router *mux.Router
 }
 
 // Creates a new instance of API
-func New(storage storage.Storage, db *gorm.DB, router *mux.Router, cache *bigcache.BigCache) *API {
+func New(fs storage.FileStorage, ms storage.MetaStorage, router *mux.Router, cache *bigcache.BigCache) *API {
 	api := &API{}
-	api.storage = storage
-	api.db = db
+	api.fs = fs
+	api.ms = ms
 	api.router = router
 	api.cache = cache
 	api.setupRoutes()

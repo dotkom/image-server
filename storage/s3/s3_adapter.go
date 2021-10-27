@@ -1,4 +1,4 @@
-package adapters
+package s3_adapter
 
 import (
 	"bytes"
