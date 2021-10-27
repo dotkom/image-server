@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/dotkom/image-server/models"
+	"github.com/dotkom/image-server/internal/models"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"

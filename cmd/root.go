@@ -21,7 +21,8 @@ const (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "image-server",
+	Use: "image-server",
+
 	Short: "Image server is a server for images of dynamic size and quality",
 	Long:  `Image server is a server for images of dynamic size and quality`,
 	Run: func(cmd *cobra.Command, args []string) {

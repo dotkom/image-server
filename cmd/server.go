@@ -7,10 +7,11 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/dotkom/image-server/internal/api"
+
 	"github.com/allegro/bigcache"
-	"github.com/dotkom/image-server/api"
-	gorm_adapter "github.com/dotkom/image-server/storage/gorm"
-	s3_adapter "github.com/dotkom/image-server/storage/s3"
+	gorm_adapter "github.com/dotkom/image-server/internal/storage/gorm"
+	s3_adapter "github.com/dotkom/image-server/internal/storage/s3"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"

@@ -3,7 +3,7 @@ package storage
 import (
 	"context"
 
-	"github.com/dotkom/image-server/models"
+	"github.com/dotkom/image-server/internal/models"
 )
 
 // Interface for storing images to a file system.

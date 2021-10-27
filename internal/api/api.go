@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/allegro/bigcache"
-	"github.com/dotkom/image-server/storage"
+	"github.com/dotkom/image-server/internal/storage"
 	"github.com/gorilla/mux"
 )
 

@@ -14,7 +14,7 @@ import (
 
 	"github.com/chai2010/webp"
 	"github.com/disintegration/imaging"
-	"github.com/dotkom/image-server/models"
+	"github.com/dotkom/image-server/internal/models"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
