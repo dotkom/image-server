@@ -1,0 +1,6 @@
+.gitignore
+.dockerignore
+Dockerfile
+image-server
+README.md
+test.db
