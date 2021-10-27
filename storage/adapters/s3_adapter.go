@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
+// Implementation of storage.Storage using AWS S3 as its storage backend.
 type S3Adapter struct {
 	bucketName *string
 	uploader   *s3manager.Uploader
@@ -17,6 +18,7 @@ type S3Adapter struct {
 	s3         *s3.S3
 }
 
+// Creates a new instance of S3Adapter taking in the bucket name and aws region as parameters
 func New(bucketName string) (*S3Adapter, error) {
 	adapter := &S3Adapter{}
 	adapter.bucketName = aws.String(bucketName)

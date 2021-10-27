@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// Gorm model for storing information about images
 type Image struct {
 	gorm.Model
 	ID          uuid.UUID `gorm:"primaryKey;type:uuid;"`

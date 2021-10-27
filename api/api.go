@@ -10,6 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// API implements http.Handler and is used to handle http requests
 type API struct {
 	storage storage.Storage
 	db      *gorm.DB
@@ -17,6 +18,7 @@ type API struct {
 	router  *mux.Router
 }
 
+// Creates a new instance of API
 func New(storage storage.Storage, db *gorm.DB, router *mux.Router, cache *bigcache.BigCache) *API {
 	api := &API{}
 	api.storage = storage
@@ -27,6 +29,7 @@ func New(storage storage.Storage, db *gorm.DB, router *mux.Router, cache *bigcac
 	return api
 }
 
+// Handles HTTP requests. Implementation of http.Handler
 func (api *API) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	api.router.ServeHTTP(w, r)
 }
