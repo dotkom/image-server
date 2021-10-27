@@ -27,7 +27,6 @@ var rootCmd = &cobra.Command{
 	Long:  `Image server is a server for images of dynamic size and quality`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
-		os.Exit(0)
 	},
 }
 

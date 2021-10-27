@@ -12,7 +12,7 @@ type FileStorage interface {
 	Save(ctx context.Context, content []byte, key string) error
 
 	// Retrieve a byte buffer with the given key
-	Get(ctx context.Context, key string) ([]byte, error)
+	Get(ctx context.Context, key string, size uint64) ([]byte, error)
 
 	// Delete the object at location of the given key
 	Delete(ctx context.Context, key string) error

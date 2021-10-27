@@ -61,8 +61,13 @@ func (api *API) download(w http.ResponseWriter, r *http.Request) {
 		quality = 100
 	}
 
+	meta, err := api.ms.Get(r.Context(), key)
+	if err != nil {
+		log.Debug(err)
+	}
+
 	// Get image buffer
-	buffer, err = api.fs.Get(r.Context(), key)
+	buffer, err = api.fs.Get(r.Context(), key, meta.Size)
 	if err != nil {
 		fmt.Print(err)
 		return
@@ -180,7 +185,7 @@ func (api *API) upload(w http.ResponseWriter, r *http.Request) {
 		Description: description,
 		Tags:        tagSlice,
 		Mime:        mimeType,
-		Size:        uint64(fileInfo.Size),
+		Size:        uint64(len(buffer)),
 	}
 	err = api.ms.Save(r.Context(), meta)
 	if err != nil {
