@@ -4,7 +4,7 @@ import (
 	_ "image/png"
 	"net/http"
 
-	"github.com/allegro/bigcache"
+	"github.com/dotkom/image-server/internal/cache"
 	"github.com/dotkom/image-server/internal/storage"
 	"github.com/gorilla/mux"
 )
@@ -13,12 +13,12 @@ import (
 type API struct {
 	fs     storage.FileStorage
 	ms     storage.MetaStorage
-	cache  *bigcache.BigCache
+	cache  cache.Cache
 	router *mux.Router
 }
 
 // Creates a new instance of API
-func New(fs storage.FileStorage, ms storage.MetaStorage, router *mux.Router, cache *bigcache.BigCache) *API {
+func New(fs storage.FileStorage, ms storage.MetaStorage, cache cache.Cache, router *mux.Router) *API {
 	api := &API{}
 	api.fs = fs
 	api.ms = ms

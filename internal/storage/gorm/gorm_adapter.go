@@ -6,6 +6,7 @@ import (
 
 	"github.com/dotkom/image-server/internal/models"
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
@@ -27,7 +28,7 @@ type imageMeta struct {
 	Key         uuid.UUID `gorm:"primaryKey;type:uuid;"`
 	Name        string
 	Description string
-	Tags        []string `gorm:"type:text[]"`
+	Tags        pq.StringArray `gorm:"type:text[]"`
 	Mime        string
 	Size        uint64
 	CreatedAt   time.Time

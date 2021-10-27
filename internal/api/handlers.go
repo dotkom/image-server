@@ -40,7 +40,8 @@ func (api *API) download(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "image/webp")
 
 	// Check if the image is cached and return the cached version if it is
-	buffer, err := api.cache.Get(fmt.Sprintf("%s/%s", r.URL.Path, r.URL.Query().Encode()))
+	imageCacheKey := fmt.Sprintf("%s/%s", r.URL.Path, r.URL.Query().Encode())
+	buffer, err := api.cache.GetByteBuffer(imageCacheKey)
 	if err == nil {
 		w.Write(buffer)
 		return
@@ -61,13 +62,20 @@ func (api *API) download(w http.ResponseWriter, r *http.Request) {
 		quality = 100
 	}
 
-	meta, err := api.ms.Get(r.Context(), key)
+	sizeCacheKey := fmt.Sprintf("meta:size:%s", key)
+
+	size, err := api.cache.GetUint64(sizeCacheKey)
 	if err != nil {
-		log.Debug(err)
+		meta, err := api.ms.Get(r.Context(), key)
+		if err != nil {
+			log.Debug(err)
+		}
+		size = meta.Size
+		api.cache.SetUint64(sizeCacheKey, size)
 	}
 
 	// Get image buffer
-	buffer, err = api.fs.Get(r.Context(), key, meta.Size)
+	buffer, err = api.fs.Get(r.Context(), key, size)
 	if err != nil {
 		fmt.Print(err)
 		return
@@ -75,10 +83,7 @@ func (api *API) download(w http.ResponseWriter, r *http.Request) {
 
 	// If no query parameters are specified, the image is returned without modifications. And added to the cache
 	if width == 0 && height == 0 && quality == 100 {
-		err = api.cache.Set(fmt.Sprintf("%s/%s", r.URL.Path, r.URL.Query().Encode()), buffer)
-		if err != nil {
-			fmt.Print(err)
-		}
+		api.cache.SetByteBuffer(imageCacheKey, buffer)
 		w.Write(buffer)
 		return
 	}
@@ -103,10 +108,7 @@ func (api *API) download(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Update cache
-	err = api.cache.Set(fmt.Sprintf("%s/%s", r.URL.Path, r.URL.Query().Encode()), buffer)
-	if err != nil {
-		fmt.Print(err)
-	}
+	api.cache.SetByteBuffer(imageCacheKey, buffer)
 
 	w.Write(buffer)
 }

@@ -9,7 +9,7 @@ import (
 
 	"github.com/dotkom/image-server/internal/api"
 
-	"github.com/allegro/bigcache"
+	bigcache_adapter "github.com/dotkom/image-server/internal/cache/bigcache"
 	gorm_adapter "github.com/dotkom/image-server/internal/storage/gorm"
 	s3_adapter "github.com/dotkom/image-server/internal/storage/s3"
 	"github.com/gorilla/mux"
@@ -34,14 +34,15 @@ func serve() {
 	}
 
 	ms := gorm_adapter.New(gorm_adapter.DBDriver(viper.GetString(dbDriver)), viper.GetString(dbDSN))
+	ms.Migrate()
 
-	cache, err := bigcache.NewBigCache(bigcache.DefaultConfig(10 * time.Minute))
+	cache, err := bigcache_adapter.New()
 	if err != nil {
-		log.Fatal("Failed to create cache", err)
+		log.Fatal("Failed to create cache adapter", err)
 	}
 
 	router := mux.NewRouter()
-	api := api.New(fs, ms, router, cache)
+	api := api.New(fs, ms, cache, router)
 
 	server := &http.Server{
 		Addr:         viper.GetString(listenAddr),
