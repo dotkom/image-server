@@ -43,6 +43,7 @@ func serve() {
 
 	router := mux.NewRouter()
 	api := api.New(fs, ms, cache, router)
+	defer api.Close()
 
 	server := &http.Server{
 		Addr:         viper.GetString(listenAddr),
