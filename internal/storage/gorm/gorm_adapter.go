@@ -36,6 +36,12 @@ type imageMeta struct {
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
 }
 
+type NotFoundError struct{}
+
+func (err *NotFoundError) Error() string {
+	return "Not found"
+}
+
 func New(driver DBDriver, dsn string) *GormAdapter {
 	log.Info("Creating GORM MetaStorage adapter")
 	adapter := &GormAdapter{}
@@ -76,7 +82,11 @@ func (adapter *GormAdapter) Get(ctx context.Context, key string) (*models.ImageM
 	var meta imageMeta
 	result := adapter.db.Limit(1).Find(&meta, "key = ?", key)
 	if result.Error != nil {
+		log.Debug(result.Error)
 		return nil, result.Error
+	}
+	if result.RowsAffected == 0 {
+		return nil, &NotFoundError{}
 	}
 	return &models.ImageMeta{
 		Key:         meta.Key,
